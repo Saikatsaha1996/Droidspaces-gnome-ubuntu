@@ -78,7 +78,7 @@ Exec=/usr/bin/gnome-shell
 ```
 to
 ```
-Exec=/usr/bin/gnome-shell --nested --mode=user -d :0 --wayland-display=wayland-0
+Exec=/usr/bin/gnome-shell --nested --mode=ubuntu -d :0 --wayland-display=wayland-0
 ```
 run
 ```
@@ -87,6 +87,7 @@ sudo update-desktop-database /usr/share/applications/
 set environment variables to .bashrc, profile 
 # note :- display resolution, display refresh rate , gpu driver not same for all devices
 ```
+export GNOME_SHELL_SESSION_MODE=ubuntu
 export XDG_CURRENT_DESKTOP=ubuntu:GNOME
 export TU_DEBUG=noconform,sysmem
 export ZINK_DESCRIPTORS=lazy
@@ -97,7 +98,6 @@ export MESA_VK_WSI_PRESENT_MODE=mailbox
 export MUTTER_DEBUG_DUMMY_MODE_SPECS=1920x1080@60
 export DISPLAY=:0
 export WAYLAND_DISPLAY=wayland-0
-export XDG_SESSION_CLASS=user
 ```
 reboot & open user terminal and minimise
 run termux x11 with
