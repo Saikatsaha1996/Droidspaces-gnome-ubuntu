@@ -78,7 +78,7 @@ Exec=/usr/bin/gnome-shell
 ```
 to
 ```
-Exec=/usr/bin/gnome-shell --nested --mode=ubuntu -d :0 --wayland-display=wayland-0
+Exec=env COGL_DRIVER=gles2 GSK_RENDERER=ngl MUTTER_RENDERER=x11 GNOME_SHELL_SESSION_MODE=ubuntu XDG_CURRENT_DESKTOP=ubuntu:GNOME TU_DEBUG=noconform,sysmem ZINK_DESCRIPTORS=lazy MESA_LOADER_DRIVER_OVERRIDE=kgsl VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/freedreno_icd.aarch64.json MESA_VK_WSI_PRESENT_MODE=mailbox MUTTER_DEBUG_DUMMY_MODE_SPECS=1920x1080@60 DISPLAY=:0 /usr/bin/gnome-shell --x11 --mode=ubuntu
 ```
 run
 ```
@@ -97,7 +97,10 @@ export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/freedreno_icd.aarch64.json
 export MESA_VK_WSI_PRESENT_MODE=mailbox
 export MUTTER_DEBUG_DUMMY_MODE_SPECS=1920x1080@60
 export DISPLAY=:0
-export WAYLAND_DISPLAY=wayland-0
+export COGL_DRIVER=gles2
+export GSK_RENDERER=ngl
+export MUTTER_RENDERER=x11
+
 ```
 reboot & open user terminal and minimise
 run termux x11 with
