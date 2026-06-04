@@ -2,6 +2,10 @@
 # note :- To run these steps and properly manage a GNOME session, a solid understanding of Linux and Linux commands is necessary before you can execute them successfully. Please do not ask me any further questions.
 <img width="2340" height="1080" alt="1000000060" src="https://github.com/user-attachments/assets/e4e29b61-ad20-48c0-820f-18fd32516e07" />
 
+<img width="1080" height="2340" alt="1000000070" src="https://github.com/user-attachments/assets/ae2a21f3-6b86-4664-8435-b99f2f02415d" />
+<img width="1080" height="2340" alt="1000000071" src="https://github.com/user-attachments/assets/2f980aea-7293-4ee0-a886-2afc99c506b9" />
+
+
 Gnome session with termux x11 compositor
 
 1st install ubuntu minimal rootfs & create tmpfiles config
