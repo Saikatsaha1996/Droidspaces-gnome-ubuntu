@@ -39,7 +39,7 @@ z /dev/snd/* 0660 root audio - -
 # =========================
 # VIDEO / MEDIA (V4L)
 # =========================
-z /dev/video* 0660 root video - -
+z /dev/video* 0660 root render - -
 z /dev/media* 0660 root video - -
 z /dev/v4l-subdev* 0660 root video - -
 
@@ -51,10 +51,16 @@ z /dev/kgsl-3d0 0660 root render - -
 # =========================
 # ANDROID BINDER / MEMORY (If using Waydroid/Anbox on Ubuntu)
 # =========================
-z /dev/binder 0666 root render - -
-z /dev/hwbinder 0666 root render - -
-z /dev/vndbinder 0666 root render - -
-z /dev/ashmem 0666 root root - -
+d /dev/binderfs 0775 root root - -
+z /dev/binderfs/binder 0666 root render - -
+z /dev/binderfs/hwbinder 0666 root render - -
+z /dev/binderfs/vndbinder 0666 root render - -
+
+L+ /dev/binder - - - - /dev/binderfs/binder
+L+ /dev/hwbinder - - - - /dev/binderfs/hwbinder
+L+ /dev/vndbinder - - - - /dev/binderfs/vndbinder
+
+z /dev/ashmem 0666 root render - -
 z /dev/ion 0664 root render - -
 ```
 ```
