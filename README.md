@@ -62,6 +62,9 @@ L+ /dev/vndbinder - - - - /dev/binderfs/vndbinder
 
 z /dev/ashmem 0666 root render - -
 z /dev/ion 0664 root render - -
+
+#d /run/user/1001 0700 debian debian - -
+#d /run/user/1000 0700 ubuntu ubuntu - -
 ```
 ```
 systemd-tmpfiles --create /etc/tmpfiles.d/android-devices.conf
