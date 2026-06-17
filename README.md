@@ -65,6 +65,8 @@ z /dev/ion 0664 root render - -
 
 #d /run/user/1001 0700 debian debian - -
 #d /run/user/1000 0700 ubuntu ubuntu - -
+#d /dev/ttyHS0 0660 root dialout - -
+
 ```
 ```
 systemd-tmpfiles --create /etc/tmpfiles.d/android-devices.conf
