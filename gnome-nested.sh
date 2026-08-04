@@ -3,7 +3,6 @@ set -e
 
 SOCKET=wayland-anland
 ANLAND_SOCKET=/tmp/anland/display_daemon.sock
-
 export XDG_RUNTIME_DIR=/run/user/$(id -u)
 
 sudo mkdir -p "$XDG_RUNTIME_DIR"
@@ -17,9 +16,10 @@ sudo chmod 666 "$ANLAND_SOCKET" 2>/dev/null || true
 
 pkill -x weston 2>/dev/null || true
 pkill -x gnome-shell 2>/dev/null || true
-pkill -x pipewire 2>/dev/null || true
-pkill -x wireplumber 2>/dev/null || true
+pkill -x pipewire 2>/dev/null || true                                                                                                                 pkill -x wireplumber 2>/dev/null || true
 pkill -x pipewire-pulse 2>/dev/null || true
+
+sleep 1
 
 rm -f \
     "$XDG_RUNTIME_DIR/$SOCKET" \
@@ -28,21 +28,17 @@ rm -f \
 unset DISPLAY
 
 export WAYLAND_DISPLAY=$SOCKET
-export XDG_SESSION_TYPE=wayland
-export XDG_CURRENT_DESKTOP=GNOME
-export XDG_SESSION_DESKTOP=GNOME
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/freedreno_icd.aarch64.json
 export TU_DEBUG=noconform
-export GNOME_SHELL_SESSION_MODE=ubuntu
-export XDG_CURRENT_DESKTOP=ubuntu:GNOME
-export MUTTER_DEBUG_DUMMY_MODE_SPECS=1920x1080@60
+export EGL_PLATFORM=surfaceless
 export MESA_LOADER_DRIVER_OVERRIDE=kgsl
 export TURNIP_KMD=kgsl
 export GALLIUM_DRIVER=freedreno
 export FD_FORCE_KGSL=1
 export XWAYLAND_FORCE_KGSL_SURFACELESS=1
-
 export ANLAND_WESTON_XWAYLAND=1
+
+sleep 1
 
 dbus-run-session -- bash <<EOF
 
@@ -76,7 +72,8 @@ weston \
     --disp-sock=$ANLAND_SOCKET \
     --socket=$SOCKET \
     --xwayland \
-    --shell=desktop-shell.so \
+    --scale=2 \
+    --shell=kiosk-shell.so \
     --no-config &
 
 WESTON_PID=\$!
@@ -86,20 +83,23 @@ for i in \$(seq 1 50); do
     sleep 0.1
 done
 
+export DISPLAY=:0
 export WAYLAND_DISPLAY=$SOCKET
 export XDG_SESSION_TYPE=wayland
-export XDG_CURRENT_DESKTOP=GNOME
 export XDG_SESSION_DESKTOP=GNOME
 export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/freedreno_icd.aarch64.json
 export TU_DEBUG=noconform
+export TURNIP_KMD=kgsl
 export GNOME_SHELL_SESSION_MODE=ubuntu
 export XDG_CURRENT_DESKTOP=ubuntu:GNOME
-export MUTTER_DEBUG_DUMMY_MODE_SPECS=1920x1080@60
+export EGL_PLATFORM=surfaceless
+export GDK_SCALE=2
+export GDK_DPI_SCALE=1
 export MESA_LOADER_DRIVER_OVERRIDE=kgsl
-export TURNIP_KMD=kgsl
 export GALLIUM_DRIVER=freedreno
-export FD_FORCE_KGSL=1
 export XWAYLAND_FORCE_KGSL_SURFACELESS=1
+export FD_FORCE_KGSL=1
+export LIBGL_KOPPER_DRI2=1
 
 exec gnome-shell --devkit --mode=ubuntu
 
