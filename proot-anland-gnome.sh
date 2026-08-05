@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e
 
+# =====================================================================
+# [PRoot LOCALE & ENCODING FIX] Bypasses terminal exit status 8 crashes
+# =====================================================================
 export LANG=en_US.UTF-8
 export LANGUAGE=en_US:en
 export LC_ALL=en_US.UTF-8
@@ -12,6 +15,9 @@ if ! locale -a | grep -q "en_US.utf8"; then
     sudo locale-gen en_US.UTF-8 || true
     sudo update-locale LANG=en_US.UTF-8 || true
 fi
+
+# Ensure Desktop directory exists for DING extension
+[ ! -d "$HOME/Desktop" ] && mkdir -p "$HOME/Desktop"
 
 sudo chmod -R 777 /tmp/anland
 SOCKET=wayland-anland
@@ -57,16 +63,18 @@ export ANLAND_NO_DRM_DEVICE=1
 
 sleep 1
 
-if [ -z "$DBUS_SYSTEM_BUS_ADDRESS" ]; then
-    echo "Faking a System Bus endpoint..."
-    DBUS_SYS_OUTPUT=$(dbus-daemon --session --print-address --fork)
-    export DBUS_SYSTEM_BUS_ADDRESS="$DBUS_SYS_OUTPUT"
-fi
-
+# =====================================================================
+# [BYPASS logind & CRITICAL DBUS LOCK] Fake system bus endpoints
+# =====================================================================
 if [ -z "$DBUS_SESSION_BUS_ADDRESS" ] || [ ! -S "${DBUS_SESSION_BUS_ADDRESS#*=}" ]; then
     echo "Starting a local custom D-Bus session..."
     DBUS_OUTPUT=$(dbus-daemon --session --print-address --fork)
     export DBUS_SESSION_BUS_ADDRESS="$DBUS_OUTPUT"
+fi
+
+if [ -z "$DBUS_SYSTEM_BUS_ADDRESS" ]; then
+    echo "Faking a System Bus endpoint..."
+    export DBUS_SYSTEM_BUS_ADDRESS="$DBUS_SESSION_BUS_ADDRESS"
 fi
 
 export GNOME_CONTROL_CENTER_DESKTOP=ubuntu
@@ -74,10 +82,13 @@ export XDG_CURRENT_DESKTOP=ubuntu:GNOME
 export XDG_SESSION_DESKTOP=ubuntu
 export G_DBUS_COOKIE_SHA1_KEYRING_DIR="$XDG_RUNTIME_DIR/.gdbus-keyring"
 mkdir -p "$G_DBUS_COOKIE_SHA1_KEYRING_DIR" && chmod 700 "$G_DBUS_COOKIE_SHA1_KEYRING_DIR"
-export G_DBUS_SYSTEM_BUS_ADDRESS="$DBUS_SYSTEM_BUS_ADDRESS"
+export G_DBUS_SYSTEM_BUS_ADDRESS="$DBUS_SESSION_BUS_ADDRESS"
+
+# Mock login1 and Accounts services natively on the fake system bus
 dbus-send --system --type=method_call --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.RequestName string:"org.freedesktop.login1" uint32:4 || true
 dbus-send --system --type=method_call --dest=org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus.RequestName string:"org.freedesktop.Accounts" uint32:4 || true
 export SYSTEMD_PROC_CMDLINE="init"
+
 export PIPEWIRE_RUNTIME_DIR="$XDG_RUNTIME_DIR"
 export PULSE_RUNTIME_PATH="$XDG_RUNTIME_DIR/pulse"
 export PULSE_SERVER="unix:$PULSE_RUNTIME_PATH/native"
@@ -98,7 +109,7 @@ fi
 
 sleep 1
 
-# Weston startup without tracking automatic nested Xwayland
+# Weston startup running your patched Xwayland server mapping cleanly
 weston \
     --backend=anland \
     --renderer=gl \
@@ -116,21 +127,12 @@ for i in $(seq 1 50); do
     sleep 0.1
 done
 
-# [FIX 1] Manually launch an independent Xwayland server directly bound to Weston
-# This circumvents GNOME's broken systemd-unit check entirely
-#echo "Spinning up a standalone PRoot Xwayland server mapping..."
-#Xwayland :0 -rootless &
-
 sleep 1
 
-#for i in $(seq 1 50); do
-#    [ -S /tmp/.X11-unix/X0 ] && break
-#    sleep 0.1
-#done
-
-#sleep 1
-
-export DISPLAY=:0
+# =====================================================================
+# [EXPORT GLOBAL VARIABLES]
+# =====================================================================
+#export DISPLAY=:0
 export WAYLAND_DISPLAY=$SOCKET
 export XDG_SESSION_TYPE=wayland
 export XDG_SESSION_DESKTOP=ubuntu
@@ -144,13 +146,20 @@ export EGL_PLATFORM=surfaceless
 export MESA_LOADER_DRIVER_OVERRIDE=kgsl
 export TURNIP_KMD=kgsl
 export GALLIUM_DRIVER=freedreno
-export FD_FORCE_KGSL=1
+export FD_FORCE_GSGL=1
 export XWAYLAND_FORCE_KGSL_SURFACELESS=1
 export ANLAND_NO_DRM_DEVICE=1
-# [FIX 2] Environment overrides forcing GNOME Shell to drop Systemd / GDM Session expectations
-#export GNOME_SHELL_NO_SESSION=1
-#export MUTTER_XWAYLAND_PATH=/usr/bin/true
+export GIO_USE_VFS=local
+export NO_GAIL=1
+export MUTTER_DEBUG_DISABLE_HW_CURSORS=1
+export CLUTTER_ACTOR_PROFILE=0
+export GNOME_TERMINAL_DISABLE_FACTORY=1
+export MUTTER_XWAYLAND_PATH=/usr/bin/true
+export VTE_PCI_DEVICE_PATH=""
 
+# =====================================================================
+# [FIX] GNOME Settings Desktop Icon Launcher Patch
+# =====================================================================
 mkdir -p "$HOME/.local/share/applications"
 
 if [ -f "/usr/share/applications/org.gnome.Settings.desktop" ]; then
@@ -162,6 +171,7 @@ fi
 cp "/usr/share/applications/$TARGET_DESKTOP" "$HOME/.local/share/applications/" || true
 sed -i 's/DBusActivatable=true/DBusActivatable=false/g' "$HOME/.local/share/applications/$TARGET_DESKTOP" || true
 
+echo "Launching GNOME Shell..."
 exec gnome-shell --mode=ubuntu --devkit
 
 kill $WESTON_PID 2>/dev/null
