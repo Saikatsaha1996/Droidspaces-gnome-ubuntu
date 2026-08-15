@@ -1,0 +1,15 @@
+diff --git a/meson.build b/meson.build  
+index 8f3f686..d39226d 100644                                                                                           --- a/meson.build                                                                                                       +++ b/meson.build  
+@@ -1064,20 +1064,8 @@ if cc.links('''#define _GNU_SOURCE                                                                  glib_conf.set('HAVE_PPOLL', 1)  
+ endif                                                                                                                    
+-# Check for pidfd_open(2)                                                                                              -if cc.links('''#include <sys/syscall.h>  
+-               #include <sys/wait.h>  
+-               #include <linux/wait.h>  
+-               #include <unistd.h>  
+-               int main (int argc, char ** argv) {                                                                     -                 siginfo_t child_info = { 0, };  
+-                 syscall (SYS_pidfd_open, 0, 0);                                                                       -                 waitid (P_PIDFD, 0, &child_info, WEXITED | WNOHANG);  
+-                 return 0;  
+-               }''', name : 'pidfd_open(2) system call')                                                               -  glib_conf.set('HAVE_PIDFD', 1)                                                                                       -endif  
+-                                                                                                                       +# pidfd disabled for legacy kernels where  
++# pidfd_open() may be exposed but waitid(P_PIDFD) is unsupported.                                                       # Check for __uint128_t (gcc) by checking for 128-bit division  
+ uint128_t_src = '''int main() {                                                                                         static __uint128_t v1 = 100;  
