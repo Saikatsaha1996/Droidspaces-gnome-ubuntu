@@ -1,0 +1,358 @@
+# /etc/udev/rules.d/99-citrus-devices.rules
+
+# ============================================================
+# CORE / STANDARD LINUX
+# ============================================================
+
+KERNEL=="null",       MODE="0666"
+KERNEL=="zero",       MODE="0666"
+KERNEL=="full",       MODE="0666"
+KERNEL=="random",     MODE="0666"
+KERNEL=="urandom",    MODE="0666"
+KERNEL=="tty",        MODE="0666"
+KERNEL=="console",    MODE="0600"
+KERNEL=="ptmx",       MODE="0666"
+KERNEL=="kmsg",       MODE="0620", GROUP="systemd-journal"
+
+
+# ============================================================
+# DRM / GPU
+# ============================================================
+
+SUBSYSTEM=="drm", KERNEL=="card[0-9]*", \
+    GROUP="video", MODE="0660"
+
+SUBSYSTEM=="drm", KERNEL=="renderD[0-9]*", \
+    GROUP="render", MODE="0660"
+
+KERNEL=="kgsl-3d0", GROUP="video", MODE="0660"
+
+
+# ============================================================
+# INPUT
+# ============================================================
+
+SUBSYSTEM=="input", KERNEL=="event[0-9]*", \
+    GROUP="input", MODE="0660"
+
+SUBSYSTEM=="input", KERNEL=="mouse[0-9]*", \
+    GROUP="input", MODE="0660"
+
+KERNEL=="uinput", GROUP="input", MODE="0660"
+KERNEL=="uhid",   GROUP="input", MODE="0660"
+
+
+# ============================================================
+# V4L2 / CAMERA
+# ============================================================
+
+SUBSYSTEM=="video4linux", KERNEL=="video[0-9]*", \
+    GROUP="video", MODE="0660"
+
+SUBSYSTEM=="video4linux", KERNEL=="v4l-subdev[0-9]*", \
+    GROUP="video", MODE="0660"
+
+KERNEL=="media[0-9]*", GROUP="video", MODE="0660"
+
+
+# ============================================================
+# AUDIO / ALSA
+# ============================================================
+
+SUBSYSTEM=="sound", GROUP="audio", MODE="0660"
+
+KERNEL=="msm_aac",        GROUP="audio", MODE="0660"
+KERNEL=="msm_aac_in",     GROUP="audio", MODE="0660"
+KERNEL=="msm_alac",       GROUP="audio", MODE="0660"
+KERNEL=="msm_amrnb",      GROUP="audio", MODE="0660"
+KERNEL=="msm_amrnb_in",   GROUP="audio", MODE="0660"
+KERNEL=="msm_amrwb",      GROUP="audio", MODE="0660"
+KERNEL=="msm_amrwb_in",   GROUP="audio", MODE="0660"
+KERNEL=="msm_amrwbplus",  GROUP="audio", MODE="0660"
+KERNEL=="msm_ape",        GROUP="audio", MODE="0660"
+KERNEL=="msm_evrc",       GROUP="audio", MODE="0660"
+KERNEL=="msm_evrc_in",    GROUP="audio", MODE="0660"
+KERNEL=="msm_g711alaw",   GROUP="audio", MODE="0660"
+KERNEL=="msm_g711alaw_in",GROUP="audio", MODE="0660"
+KERNEL=="msm_g711mlaw",   GROUP="audio", MODE="0660"
+KERNEL=="msm_g711mlaw_in",GROUP="audio", MODE="0660"
+KERNEL=="msm_hweffects",  GROUP="audio", MODE="0660"
+KERNEL=="msm_mp3",        GROUP="audio", MODE="0660"
+KERNEL=="msm_multi_aac",  GROUP="audio", MODE="0660"
+KERNEL=="msm_qcelp",      GROUP="audio", MODE="0660"
+KERNEL=="msm_qcelp_in",   GROUP="audio", MODE="0660"
+KERNEL=="msm_rtac",       GROUP="audio", MODE="0660"
+KERNEL=="msm_wma",        GROUP="audio", MODE="0660"
+KERNEL=="msm_wmapro",     GROUP="audio", MODE="0660"
+KERNEL=="msm_audio_cal",  GROUP="audio", MODE="0660"
+
+
+# ============================================================
+# I2C
+# ============================================================
+
+KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+
+
+# ============================================================
+# IIO / SENSORS
+# ============================================================
+
+KERNEL=="iio:device[0-9]*", GROUP="iio", MODE="0660"
+
+
+# ============================================================
+# GPIO
+# ============================================================
+
+KERNEL=="gpiochip[0-9]*", GROUP="gpio", MODE="0660"
+
+
+# ============================================================
+# RTC
+# ============================================================
+
+KERNEL=="rtc[0-9]*", GROUP="rtc", MODE="0660"
+
+
+# ============================================================
+# FUSE
+# ============================================================
+
+KERNEL=="fuse", GROUP="fuse", MODE="0660"
+
+
+# ============================================================
+# TUN / NETWORK
+# ============================================================
+
+KERNEL=="tun", GROUP="netdev", MODE="0660"
+KERNEL=="rfkill", GROUP="netdev", MODE="0660"
+
+
+# ============================================================
+# SERIAL / BLUETOOTH
+# ============================================================
+
+KERNEL=="ttyHS[0-9]*", GROUP="dialout", MODE="0660"
+
+
+# ============================================================
+# USB
+# ============================================================
+
+KERNEL=="mtp_usb", GROUP="usb", MODE="0660"
+KERNEL=="usb_accessory", GROUP="usb", MODE="0660"
+
+SUBSYSTEM=="usb", GROUP="usb", MODE="0660"
+
+
+# ============================================================
+# SCSI
+# ============================================================
+
+KERNEL=="sg[0-9]*", GROUP="disk", MODE="0660"
+
+
+# ============================================================
+# LOOP
+# ============================================================
+
+KERNEL=="loop[0-9]*", GROUP="disk", MODE="0660"
+KERNEL=="loop-control", GROUP="disk", MODE="0660"
+
+
+# ============================================================
+# DEVICE MAPPER
+# ============================================================
+
+KERNEL=="device-mapper", GROUP="disk", MODE="0660"
+
+
+# ============================================================
+# MMC / BLOCK
+# ============================================================
+
+SUBSYSTEM=="block", GROUP="disk", MODE="0660"
+
+
+# ============================================================
+# TPM / RNG
+# ============================================================
+
+KERNEL=="hw_random", GROUP="random", MODE="0440"
+KERNEL=="msm-rng", GROUP="random", MODE="0440"
+
+
+# ============================================================
+# ANDROID SHMEM / ION
+# ============================================================
+
+KERNEL=="ashmem", GROUP="video", MODE="0660"
+KERNEL=="ion",    GROUP="video", MODE="0660"
+
+
+# ============================================================
+# ANDROID IPC
+# ============================================================
+
+KERNEL=="binder",   GROUP="binder", MODE="0660"
+KERNEL=="hwbinder", GROUP="binder", MODE="0660"
+KERNEL=="vndbinder",GROUP="binder", MODE="0660"
+
+
+# ============================================================
+# QUALCOMM DSP / ADSP
+# ============================================================
+
+KERNEL=="adsprpc-smd",        GROUP="audio", MODE="0660"
+KERNEL=="adsprpc-smd-secure", GROUP="audio", MODE="0600"
+
+KERNEL=="apr_apps2", GROUP="audio", MODE="0660"
+KERNEL=="msm_sps",   GROUP="audio", MODE="0660"
+
+
+# ============================================================
+# QUALCOMM IPA / NETWORK
+# ============================================================
+
+KERNEL=="ipa",               GROUP="netdev", MODE="0660"
+KERNEL=="ipa_adpl",          GROUP="netdev", MODE="0660"
+KERNEL=="ipa_odl_ctl",       GROUP="netdev", MODE="0660"
+KERNEL=="ipa_tethering_bridge", GROUP="netdev", MODE="0660"
+
+KERNEL=="ipaIpv6CTTable", GROUP="netdev", MODE="0600"
+KERNEL=="ipaNatTable",    GROUP="netdev", MODE="0600"
+
+KERNEL=="rmnet_ctrl", GROUP="netdev", MODE="0660"
+KERNEL=="wwan_ioctl", GROUP="netdev", MODE="0660"
+KERNEL=="ppp",        GROUP="netdev", MODE="0660"
+
+
+# ============================================================
+# QUALCOMM SECURITY
+# ============================================================
+
+KERNEL=="qseecom",   GROUP="qsee", MODE="0660"
+KERNEL=="smcinvoke", GROUP="qsee", MODE="0660"
+
+
+# ============================================================
+# QUALCOMM CRYPTO
+# ============================================================
+
+KERNEL=="qce", GROUP="crypto", MODE="0660"
+
+
+# ============================================================
+# BLUETOOTH
+# ============================================================
+
+KERNEL=="btpower", GROUP="bluetooth", MODE="0660"
+KERNEL=="st21nfc", GROUP="nfc", MODE="0660"
+
+
+# ============================================================
+# NFC
+# ============================================================
+
+KERNEL=="nfc*", GROUP="nfc", MODE="0660"
+
+
+# ============================================================
+# TOUCH / FINGERPRINT
+# ============================================================
+
+KERNEL=="xiaomi-touch", GROUP="input", MODE="0660"
+
+KERNEL=="focaltech_fp", GROUP="input", MODE="0660"
+KERNEL=="goodix_fp",    GROUP="input", MODE="0660"
+KERNEL=="fpsdev0",      GROUP="input", MODE="0660"
+
+
+# ============================================================
+# UIO
+# ============================================================
+
+KERNEL=="uio[0-9]*", GROUP="uio", MODE="0660"
+
+
+# ============================================================
+# MEMORY
+# ============================================================
+
+KERNEL=="mem", GROUP="kmem", MODE="0600"
+
+
+# ============================================================
+# CPU POWER
+# ============================================================
+
+KERNEL=="cpu_dma_latency", GROUP="power", MODE="0660"
+KERNEL=="network_latency", GROUP="power", MODE="0660"
+KERNEL=="network_throughput", GROUP="power", MODE="0660"
+
+
+# ============================================================
+# CONSOLE / VIRTUAL TERMINALS
+# ============================================================
+
+KERNEL=="vcs[0-9]*",  GROUP="tty", MODE="0620"
+KERNEL=="vcsa[0-9]*", GROUP="tty", MODE="0620"
+KERNEL=="vcsu[0-9]*", GROUP="tty", MODE="0620"
+
+
+# ============================================================
+# ANDROID DEBUG / DIAG
+# ============================================================
+
+KERNEL=="diag", GROUP="diag", MODE="0660"
+
+KERNEL=="at_mdm[0-9]*", GROUP="dialout", MODE="0660"
+KERNEL=="at_usb[0-9]*", GROUP="dialout", MODE="0660"
+
+
+# ============================================================
+# DCC / DEBUG
+# ============================================================
+
+KERNEL=="dcc_sram", GROUP="debug", MODE="0600"
+KERNEL=="kmsg_debug", GROUP="debug", MODE="0600"
+
+
+# ============================================================
+# RAMDUMP / SUBSYSTEM
+# ============================================================
+
+KERNEL=="ramdump_*", GROUP="debug", MODE="0640"
+KERNEL=="subsys_*",   GROUP="debug", MODE="0640"
+
+
+# ============================================================
+# MISC QUALCOMM
+# ============================================================
+
+KERNEL=="qg",         GROUP="power", MODE="0660"
+KERNEL=="qg_battery", GROUP="power", MODE="0660"
+KERNEL=="usf1",       GROUP="system", MODE="0660"
+
+
+# ============================================================
+# SHM
+# ============================================================
+
+KERNEL=="shm", MODE="0770"
+
+
+# ============================================================
+# MTP / USB ACCESSORY
+# ============================================================
+
+KERNEL=="usb_accessory", GROUP="usb", MODE="0660"
+
+
+# ============================================================
+# SOCKET / PTY
+# ============================================================
+
+KERNEL=="ptmx", MODE="0666"
